@@ -9,11 +9,11 @@ export async function downloadEpisodes (req,res) {
 
     try {
         for(const episode of episodes) {
-            await downloadEpisodeImages(episode)
+            await downloadEpisodeImages(title,episode)
         }
         res.status(200).json({success:true , message:"Episodes Downloaded Succesfully "});
     } catch (error) {
         console.error("Download Failed: ",error.message);
-        res.status(500).json({error: "Download failed"});
+        res.status(500).json({error: "Download failed" +'  '+ error.message});
     }
 }
