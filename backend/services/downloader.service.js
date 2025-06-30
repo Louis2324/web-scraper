@@ -80,12 +80,3 @@ export async function downloadEpisodeImages(webToonTitle, episode) {
     }
 }
 
-
-const testEpisode = {
-    title: "Episode 1",
-    url: "https://www.webtoons.com/en/romance/truebeauty/episode-1/viewer?title_no=1436&episode_no=1"
-};
-
-(async () => {
-    await downloadEpisodeImages("True Beauty", testEpisode);
-})();
