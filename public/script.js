@@ -1,81 +1,70 @@
-        // Simulate fetching webtoon data
-        document.getElementById('fetch-btn').addEventListener('click', function() {
-            const urlInput = document.getElementById('webtoon-url').value;
-            
-            if (!urlInput) {
-                alert('Please enter a webtoon URL');
-                return;
-            }
-            
-            // Show loading indicator
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('webtoon-details').style.display = 'none';
-            
-            // Simulate network request
-            setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('webtoon-details').style.display = 'block';
-                
-                // Generate episode cards
-                const episodesGrid = document.getElementById('episodes-grid');
-                episodesGrid.innerHTML = '';
-                
-                for (let i = 1; i <= 15; i++) {
-                    const episodeCard = document.createElement('div');
-                    episodeCard.className = 'episode-card';
-                    episodeCard.innerHTML = `
-                        <div class="episode-thumb">
-                            <img src="https://via.placeholder.com/300x150/FFD700/333333?text=Episode+${i}" alt="Episode ${i}">
-                            <div class="episode-number">Episode ${i}</div>
-                        </div>
-                        <div class="episode-info">
-                            <div class="episode-title">The ${getRandomAdjective()} ${getRandomNoun()}</div>
-                            <div class="episode-date">${getRandomDate()}</div>
-                            <button class="download-btn" data-episode="${i}">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                        </div>
-                    `;
-                    episodesGrid.appendChild(episodeCard);
-                }
-                
-                // Add download event listeners
-                document.querySelectorAll('.download-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const episode = this.getAttribute('data-episode');
-                        alert(`Downloading episode ${episode}...`);
-                        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading';
-                        this.disabled = true;
-                        
-                        // Simulate download completion
-                        setTimeout(() => {
-                            this.innerHTML = '<i class="fas fa-check"></i> Downloaded';
-                        }, 2000);
-                    });
-                });
-                
-                // Scroll to results
-                document.getElementById('webtoon-details').scrollIntoView({ behavior: 'smooth' });
-            }, 1500);
-        });
-        
-        // Helper functions for generating random data
-        function getRandomAdjective() {
-            const adjectives = ['Mysterious', 'Beautiful', 'Dramatic', 'Romantic', 'Unexpected', 
-                              'Shocking', 'Enchanting', 'Secret', 'Fateful', 'Emotional'];
-            return adjectives[Math.floor(Math.random() * adjectives.length)];
-        }
-        
-        function getRandomNoun() {
-            const nouns = ['Encounter', 'Revelation', 'Meeting', 'Moment', 'Decision', 
-                         'Confession', 'Promise', 'Reunion', 'Departure', 'Surprise'];
-            return nouns[Math.floor(Math.random() * nouns.length)];
-        }
-        
-        function getRandomDate() {
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const month = months[Math.floor(Math.random() * months.length)];
-            const day = Math.floor(Math.random() * 28) + 1;
-            const year = 2020 + Math.floor(Math.random() * 4);
-            return `${month} ${day}, ${year}`;
-        }
+const fetchBtn = document.getElementById("fetch-btn");
+const urlInput = document.getElementById("webtoon-url");
+const loadingSection = document.getElementById("loading");
+const detailsSection = document.getElementById("webtoon-details");
+const webtoonTitle = document.getElementById("webtoon-title");
+const webtoonDescription = document.getElementById("webtoon-description");
+const episodesGrid = document.getElementById("episodes-grid");
+
+fetchBtn.addEventListener("click", async () => {
+  const url = urlInput.value.trim();
+  if (!url) {
+    alert("Please enter a webtoon URL");
+    return;
+  }
+
+  loadingSection.style.display = "block";
+  detailsSection.style.display = "none";
+
+  try {
+    const response = await fetch(`/api/scrape?url=${encodeURIComponent(url)}`);
+    if (!response.ok) throw new Error("Failed to scrape");
+
+    const data = await response.json();
+    const { title, episodes } = data;
+
+    webtoonTitle.textContent = title || "Webtoon Title";
+    webtoonDescription.textContent = `Found ${episodes.length} episode(s).`;
+    episodesGrid.innerHTML = "";
+
+    // Render episodes
+    episodes.forEach((ep) => {
+      const card = document.createElement("div");
+      card.className = "episode-card";
+      card.innerHTML = `
+        <div class="episode-thumb">
+          <div class="episode-number">${title}</div>
+        </div>
+        <div class="episode-info">
+          <div class="episode-title">${ep.title}</div>
+          <button class="download-btn" data-epnum="${ep.number}" data-url="${ep.url}" data-title="${ep.title}">
+            <i class="fas fa-download"></i> Download
+          </button>
+        </div>
+      `;
+      episodesGrid.appendChild(card);
+    });
+
+    loadingSection.style.display = "none";
+    detailsSection.style.display = "block";
+    detailsSection.scrollIntoView({ behavior: "smooth" });
+
+    document.querySelectorAll(".download-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const epTitle = btn.dataset.title;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Downloading`;
+        btn.disabled = true;
+
+        // TODO: Implement real download later
+        setTimeout(() => {
+          btn.innerHTML = `<i class="fas fa-check"></i> Downloaded`;
+        }, 2000);
+      });
+    });
+  } catch (err) {
+    console.error("Scrape failed:", err.message);
+    alert("Unable to fetch episodes. Check the console.");
+  } finally {
+    loadingSection.style.display = "none";
+  }
+});

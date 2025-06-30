@@ -11,11 +11,11 @@
     <div class="container">
         <header>
             <h1>Webtoon Scraper</h1>
-            <p class="subtitle">Download your favorite webtoons with a single click</p>
+            <p class="subtitle">Download your favorite webtoon with a single click</p>
         </header>
         
         <div class="input-section">
-            <input type="text" class="url-input" id="webtoon-url" placeholder="Enter webtoon URL (e.g., https://www.webtoons.com/en/romance/lore-olympus/list?title_no=1320)">
+            <input type="text" class="url-input" id="webtoon-url" placeholder="Enter webtoon URL (e.g.,https://www.webtoons.com/en/action/teenage-mercenary/list?title_no=2677)">
             <button class="btn" id="fetch-btn">
                 <i class="fas fa-bolt"></i> Fetch Webtoon
             </button>
@@ -29,14 +29,14 @@
         <div class="webtoon-details" id="webtoon-details">
             <div class="webtoon-header">
                 <div class="webtoon-cover">
-                    <img src="https://via.placeholder.com/300x400/FFD700/333333?text=Webtoon+Cover" alt="Lore Olympus Cover" id="webtoon-cover">
+                    <img src="https://via.placeholder.com/300x400/FFD700/333333?text=Webtoon+Cover" alt="webtoon_cover" id="webtoon-cover">
                 </div>
                 <div class="webtoon-info">
                     <h2 class="webtoon-title" id="webtoon-title">Lore Olympus</h2>
                     <p class="webtoon-description" id="webtoon-description">
-                        A modern take on the Greek myth of Hades and Persephone. Persephone, young goddess of spring, moves to the big city of Olympus. Her mother, Demeter, has raised her in the mortal world, but after Persephone promises to train as a sacred virgin, she's allowed to live in the fast-moving, glamorous world of the gods. When her roommate, Artemis, takes her to a party, her entire life changes: she ends up meeting Hades and feels an immediate spark with the charming, misunderstood ruler of the Underworld. Now Persephone must navigate the confusing politics and relationships that rule Olympus, while also figuring out her own place—and her own power.
+                        Webtoon basic description
                     </p>
-                    <div class="status fetched">Data fetched successfully</div>
+                    <div class="status fetched" id="resStatus">Data fetched successfully</div>
                 </div>
             </div>
             
@@ -48,5 +48,6 @@
             </div>
         </div>
     </div>
+    <script src="./script.js"></script>
 </body>
 </html>
