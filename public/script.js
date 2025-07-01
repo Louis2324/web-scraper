@@ -27,17 +27,19 @@ fetchBtn.addEventListener("click", async () => {
     webtoonDescription.textContent = `Found ${episodes.length} episode(s).`;
     episodesGrid.innerHTML = "";
 
-    // Render episodes
     episodes.forEach((ep) => {
       const card = document.createElement("div");
       card.className = "episode-card";
       card.innerHTML = `
         <div class="episode-thumb">
-          <div class="episode-number">${title}</div>
+          <div class="episode-number">#${ep.number}</div>
         </div>
         <div class="episode-info">
           <div class="episode-title">${ep.title}</div>
-          <button class="download-btn" data-epnum="${ep.number}" data-url="${ep.url}" data-title="${ep.title}">
+          <button class="download-btn" 
+                  data-epnum="${ep.number}" 
+                  data-url="${ep.url}" 
+                  data-title="${ep.title}">
             <i class="fas fa-download"></i> Download
           </button>
         </div>
@@ -49,18 +51,7 @@ fetchBtn.addEventListener("click", async () => {
     detailsSection.style.display = "block";
     detailsSection.scrollIntoView({ behavior: "smooth" });
 
-    document.querySelectorAll(".download-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const epTitle = btn.dataset.title;
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Downloading`;
-        btn.disabled = true;
-
-        // TODO: Implement real download later
-        setTimeout(() => {
-          btn.innerHTML = `<i class="fas fa-check"></i> Downloaded`;
-        }, 2000);
-      });
-    });
+    setupDownloadListeners(title);
   } catch (err) {
     console.error("Scrape failed:", err.message);
     alert("Unable to fetch episodes. Check the console.");
@@ -68,3 +59,46 @@ fetchBtn.addEventListener("click", async () => {
     loadingSection.style.display = "none";
   }
 });
+
+function setupDownloadListeners(webtoon) {
+  document.querySelectorAll(".download-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const epTitle = btn.dataset.title;
+      const epNum = btn.dataset.epnum;
+      const epUrl = btn.dataset.url;
+
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Downloading`;
+      btn.disabled = true;
+
+      const episode = {
+        number: parseInt(epNum),
+        title: epTitle,
+        url: epUrl,
+      };
+
+      try {
+        const response = await fetch("/api/download", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: webtoon,
+            episodes: [episode],
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result?.error || "Download failed");
+        }
+
+        btn.innerHTML = `<i class="fas fa-check"></i> Downloaded`;
+      } catch (error) {
+        console.error("Download error:", error.message);
+        btn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Failed`;
+      }
+    });
+  });
+}
