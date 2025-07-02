@@ -1,7 +1,5 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-
-// Delay utility to throttle requests (prevents 429 Too Many Requests)
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function scrapeWebtoon(req, res) {
@@ -9,7 +7,6 @@ export async function scrapeWebtoon(req, res) {
   if (!url) return res.status(400).json({ error: "Missing url" });
 
   try {
-    // Headers to mimic a real browser
     const headers = {
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
@@ -89,7 +86,7 @@ export async function scrapeWebtoon(req, res) {
     }
 
     // Add episode numbers
-    const numberedEpisodes = episodes.map((ep, index) => ({
+    const numberedEpisodes = episodes.reverse().map((ep, index) => ({
       number: index + 1,
       ...ep,
     }));
