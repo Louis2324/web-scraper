@@ -5,6 +5,7 @@ const detailsSection = document.getElementById("webtoon-details");
 const webtoonTitle = document.getElementById("webtoon-title");
 const webtoonDescription = document.getElementById("webtoon-description");
 const episodesGrid = document.getElementById("episodes-grid");
+const webtoonCover = document.getElementById("webtoon-cover");
 
 fetchBtn.addEventListener("click", async () => {
   const url = urlInput.value.trim();
@@ -21,12 +22,16 @@ fetchBtn.addEventListener("click", async () => {
     if (!response.ok) throw new Error("Failed to scrape");
 
     const data = await response.json();
-    const { title, episodes } = data;
+    const { title, cover, episodes } = data;
 
+    // Update UI with title and cover
     webtoonTitle.textContent = title || "Webtoon Title";
-    webtoonDescription.textContent = `Found ${episodes.length} episode(s).`;
+    webtoonCover.src = cover || "https://via.placeholder.com/300x400/FFD700/333333?text=Webtoon+Cover";
+    webtoonDescription.textContent = `Found ${episodes.length} episode(s) for "${title}"`;
+
     episodesGrid.innerHTML = "";
 
+    // Render episodes
     episodes.forEach((ep) => {
       const card = document.createElement("div");
       card.className = "episode-card";
